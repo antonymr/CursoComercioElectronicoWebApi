@@ -1,13 +1,8 @@
 using Curso.ComercioElectronico.Aplicacion;
-using Curso.ComercioElectronico.Aplicacion.Services;
-using Curso.ComercioElectronico.Aplicacion.ServicesImpl;
 using Curso.ComercioElectronico.Dominio;
-using Curso.ComercioElectronico.Dominio.Repositories;
 using Curso.ComercioElectronico.Infraestructura;
-using Curso.ComercioElectronico.Infraestructura.Repositories;
 using Curso.ComercioElectronico.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -38,6 +33,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidIssuer = builder.Configuration["JWT:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
     };
+});
+
+//Configurar politica
+builder.Services.AddAuthorization(options =>
+{
+    //de verificacion de claims
+    //options.AddPolicy("PoliticaClaim", policy => policy.RequireClaim("CodigoAcceso"));
+    options.AddPolicy("Ecuatoriano", policy => policy.RequireClaim("Ecuatoriano", true.ToString()));
+    options.AddPolicy("TieneLicencia", policy => policy.RequireClaim("TieneLicencia", true.ToString()));
+    options.AddPolicy("EcuatorianoLicencia", policy => policy.RequireClaim("TieneLicencia", true.ToString())
+                                                            .RequireClaim("Ecuatoriano", true.ToString()));
+
+    //Configurable
+    //Archivo de configuracion Politicas => roles asociados
+    options.AddPolicy("Gestion", policy => policy.RequireRole("Admin", "Soporte"));
 });
 
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JWT"));

@@ -1,11 +1,13 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Curso.ComercioElectronico.WebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BrandController : ControllerBase, IBrandAppService

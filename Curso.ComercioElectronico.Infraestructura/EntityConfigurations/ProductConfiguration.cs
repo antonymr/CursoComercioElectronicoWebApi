@@ -17,8 +17,6 @@ namespace Curso.ComercioElectronico.Infraestructura.EntityConfigurations
 
             //PK
             builder.HasKey(b => b.Id);
-
-            //ID
             builder.Property(b => b.Id)
                 .IsRequired();
 

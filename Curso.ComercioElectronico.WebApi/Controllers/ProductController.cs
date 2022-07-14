@@ -20,12 +20,14 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Facturacion")]
         public async Task<ResultPagination<ProductDto>> GetAllAsync(string? search = "", int offset = 0, int limit = 10, string sort = "Name", string order = "asc")
         {
             return await productAplicacion.GetAllAsync(search, offset, limit, sort, order);
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "Gestion")]
         public async Task<ProductDto> GetByIdAsync(Guid id)
         {
             return await productAplicacion.GetByIdAsync(id);

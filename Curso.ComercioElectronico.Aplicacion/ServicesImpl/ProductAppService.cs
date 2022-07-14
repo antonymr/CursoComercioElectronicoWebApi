@@ -3,6 +3,7 @@ using Curso.ComercioElectronico.Aplicacion.Dtos;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
     {
         private readonly IGenericRepository<Product> productRepository;
         private readonly IMapper mapper;
+        private readonly IValidator<CreateProductDto> productDtoValidator; 
 
-        public ProductAppService(IGenericRepository<Product> repository, IMapper mapper)
+        public ProductAppService(IGenericRepository<Product> repository, IMapper mapper, IValidator<CreateProductDto> productDtoValidator)
         {
             productRepository = repository;
             this.mapper = mapper;
+            this.productDtoValidator = productDtoValidator;
         }
 
         public async Task<ResultPagination<ProductDto>> GetAllAsync(string? search = "", int offset = 0, int limit = 10, string sort = "Name", string order = "asc")
@@ -67,7 +70,7 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             var queryDto = query.Select(p => new ProductDto { 
                 Id = p.Id, 
                 Name = p.Name, 
-                Descrription = p.Description, 
+                Description = p.Description, 
                 Price = p.Price, 
                 Brand = p.Brand.Description, 
                 ProductType = p.ProductType.Description 
@@ -88,7 +91,7 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             var resultQuery = query.Select(p => new ProductDto { 
                 Id = p.Id, 
                 Name = p.Name, 
-                Descrription = p.Description, 
+                Description = p.Description, 
                 Price = p.Price, 
                 Brand = p.Brand.Description, 
                 ProductType = p.ProductType.Description 
@@ -104,21 +107,26 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             await productRepository.DeleteAsync(product);
         }
 
-        public async Task UpdateAsync(Guid id, CreateProductDto productTypeDto)
+        public async Task UpdateAsync(Guid id, CreateProductDto productDto)
         {
             var product = await productRepository.GetByIdAsync(id);
-            product.Name = productTypeDto.Name;
-            product.Description = productTypeDto.Descrription;
-            product.Price = productTypeDto.Price;
+            product.Name = productDto.Name;
+            product.Description = productDto.Description;
+            product.Price = productDto.Price;
             product.ModifiedDate = DateTime.Now;
-            product.BrandId = productTypeDto.BrandId;
-            product.ProductTypeId = productTypeDto.ProductTypeId;
+            product.BrandId = productDto.BrandId;
+            product.ProductTypeId = productDto.ProductTypeId;
             await productRepository.UpdateAsync(product);
         }
 
-        public async Task CreateAsync(CreateProductDto entity)
+        public async Task CreateAsync(CreateProductDto productDto)
         {
-            var product = mapper.Map<Product>(entity);
+            var validation = productDtoValidator.Validate(productDto);
+            if (!validation.IsValid)
+            {
+                throw new FormatException(validation.ToString());
+            }
+            var product = mapper.Map<Product>(productDto);
             product.Id = Guid.NewGuid();
             product.CreationDate = DateTime.Now;
             await productRepository.CreateAsync(product);

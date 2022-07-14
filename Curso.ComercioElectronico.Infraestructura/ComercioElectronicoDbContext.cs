@@ -1,6 +1,5 @@
 ﻿using Curso.ComercioElectronico.Dominio;
 using Curso.ComercioElectronico.Dominio.Entities;
-using Curso.ComercioElectronico.Dominio.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ namespace Curso.ComercioElectronico.Infraestructura
     {
         public ComercioElectronicoDbContext(DbContextOptions options):base(options){}
 
-        public DbSet<Catalogo> Catalogos { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<Brand> Brands{ get; set; }

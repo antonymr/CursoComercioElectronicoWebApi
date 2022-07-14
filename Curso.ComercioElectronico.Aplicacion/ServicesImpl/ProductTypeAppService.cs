@@ -2,6 +2,7 @@
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 {
     public class ProductTypeAppService : IProductTypeAppService
     {
-        private IGenericRepository<ProductType> productTypeRepository;
-        public ProductTypeAppService(IGenericRepository<ProductType> repository)
+        private readonly IGenericRepository<ProductType> productTypeRepository;
+        private readonly IValidator<CreateProductTypeDto> validator;
+
+        public ProductTypeAppService(IGenericRepository<ProductType> repository, IValidator<CreateProductTypeDto> validator)
         {
             productTypeRepository = repository;
+            this.validator = validator;
         }
 
         public async Task<ICollection<ProductTypeDto>> GetAllAsync()

@@ -2,6 +2,7 @@
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 {
     public class BrandAppService : IBrandAppService
     {
-        private IGenericRepository<Brand> brandRepository;
+        private readonly IGenericRepository<Brand> brandRepository;
+        private readonly IValidator<CreateBrandDto> validator;
 
-        public BrandAppService(IGenericRepository<Brand> repository)
+        public BrandAppService(IGenericRepository<Brand> repository, IValidator<CreateBrandDto> validator)
         {
             brandRepository = repository;
+            this.validator = validator;
         }
 
         public async Task<ICollection<BrandDto>> GetAllAsync()

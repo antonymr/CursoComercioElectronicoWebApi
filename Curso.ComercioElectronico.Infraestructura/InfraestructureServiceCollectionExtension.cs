@@ -20,12 +20,9 @@ namespace Curso.ComercioElectronico.Infraestructura
             {
                 options.UseSqlServer(config.GetConnectionString("ComercioElectronico"));
             });
-            services.AddTransient<ICatalogoRepositorio, CatalogoRepositorio>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
             services.AddTransient<IBrandRepository, BrandRepository>();
-            services.AddTransient<IDeliveryMethodRepository, DeliveryMethodRepository>();
-            services.AddTransient<IClienteRepositorio, ClienteRepositorio>();
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             return services;
         }
