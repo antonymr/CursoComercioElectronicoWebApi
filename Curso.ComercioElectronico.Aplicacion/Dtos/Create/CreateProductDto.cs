@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Curso.ComercioElectronico.Aplicacion.Dtos
+﻿
+namespace Curso.ComercioElectronico.Aplicacion.Dtos.Create
 {
     public class CreateProductDto
     {

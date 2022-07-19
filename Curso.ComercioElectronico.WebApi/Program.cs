@@ -2,6 +2,7 @@ using Curso.ComercioElectronico.Aplicacion;
 using Curso.ComercioElectronico.Dominio;
 using Curso.ComercioElectronico.Infraestructura;
 using Curso.ComercioElectronico.WebApi;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -10,7 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+// Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    //Aplicar filter globalmente a todos los controller
+    options.Filters.Add<ApiExceptionFilterAttribute>();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -52,6 +59,10 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JWT"));
 
+//builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddCors();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +73,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Politica global CORS Middleware  
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) // Permitir cualquier origen
+    .AllowCredentials());
 
 //2. registra el middleware que usa los esquemas de autenticación registrados
 //debe estar antes de cualquier componente componente que requiere autenticacion

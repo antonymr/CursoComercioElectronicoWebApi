@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Dominio.Repositories
 {
-    public interface IBrandRepository
+    public interface IOrderRepository
     {
-        Task<ICollection<Brand>> GetAsync();
+
     }
 }

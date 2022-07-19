@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
+using Curso.ComercioElectronico.Aplicacion.Exceptions;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 {
@@ -17,13 +14,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
     {
         private readonly IGenericRepository<Product> productRepository;
         private readonly IMapper mapper;
-        private readonly IValidator<CreateProductDto> productDtoValidator; 
+        private readonly IValidator<CreateProductDto> validator; 
 
         public ProductAppService(IGenericRepository<Product> repository, IMapper mapper, IValidator<CreateProductDto> productDtoValidator)
         {
             productRepository = repository;
             this.mapper = mapper;
-            this.productDtoValidator = productDtoValidator;
+            this.validator = productDtoValidator;
         }
 
         public async Task<ResultPagination<ProductDto>> GetAllAsync(string? search = "", int offset = 0, int limit = 10, string sort = "Name", string order = "asc")
@@ -88,6 +85,8 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         {
             var query = productRepository.GetQueryable();
             query = query.Where(p => p.Id == id);
+            if(query.Count() == 0)
+                throw new NotFoundException($"Producto con id {id} no encontrado");
             var resultQuery = query.Select(p => new ProductDto { 
                 Id = p.Id, 
                 Name = p.Name, 
@@ -102,14 +101,20 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         public async Task DeleteAsync(Guid id)
         {
             var product = await productRepository.GetByIdAsync(id);
+            if (product == null)
+                throw new NotFoundException($"Producto con id {id} no encontrado.");
             product.IsDeleted = true;
             product.ModifiedDate = DateTime.Now;
-            await productRepository.DeleteAsync(product);
+            await productRepository.UpdateAsync(product);
+            //await productRepository.DeleteAsync(product);
         }
 
         public async Task UpdateAsync(Guid id, CreateProductDto productDto)
         {
+            await validator.ValidateAndThrowAsync(productDto);
             var product = await productRepository.GetByIdAsync(id);
+            if (product == null)
+                throw new NotFoundException($"Producto con id {id} no encontrado.");
             product.Name = productDto.Name;
             product.Description = productDto.Description;
             product.Price = productDto.Price;
@@ -121,11 +126,7 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 
         public async Task CreateAsync(CreateProductDto productDto)
         {
-            var validation = productDtoValidator.Validate(productDto);
-            if (!validation.IsValid)
-            {
-                throw new FormatException(validation.ToString());
-            }
+            await validator.ValidateAndThrowAsync(productDto);
             var product = mapper.Map<Product>(productDto);
             product.Id = Guid.NewGuid();
             product.CreationDate = DateTime.Now;

@@ -55,13 +55,5 @@ namespace Curso.ComercioElectronico.Dominio.Repositories
         /// </summary>
         /// <returns></returns>
         IQueryable<T> GetQueryable();
-
-        /// <summary>
-        /// Retorna una consulta paginada.
-        /// </summary>
-        /// <param name="limit"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
-        IQueryable<T> GetListOffSetAsync(int limit = 10, int offset = 0);
     }
 }

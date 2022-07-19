@@ -23,9 +23,10 @@ namespace Curso.ComercioElectronico.Aplicacion
             services.AddTransient<IBrandAppService, BrandAppService>();
 
             //Validador
-            services.AddScoped<IValidator<CreateProductDto>, ProductValidator>();
-            services.AddScoped<IValidator<CreateProductTypeDto>, ProductTypeValidator>();
-            services.AddScoped<IValidator<CreateBrandDto>, BrandValidator>();
+            //services.AddScoped<IValidator<CreateProductDto>, ProductValidator>();
+            //services.AddScoped<IValidator<CreateProductTypeDto>, ProductTypeValidator>();
+            //services.AddScoped<IValidator<CreateBrandDto>, BrandValidator>();
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             //Automaper
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

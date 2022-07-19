@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Aplicacion.Validator
 {
-    public class BrandValidator : AbstractValidator<CreateBrandDto>
+    public class DeliveryMethodValidator : AbstractValidator<CreateDeliveryMethodDto>
     {
-        public BrandValidator()
+        public DeliveryMethodValidator()
         {
             RuleFor(a => a.Code).NotNull().NotEmpty();
             RuleFor(a => a.Code).Length(4);

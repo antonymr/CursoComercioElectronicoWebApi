@@ -2,9 +2,10 @@
 
 namespace Curso.ComercioElectronico.Dominio.Entities
 {
-    public class ProductType : BaseCatalogEntity
+    public class DeliveryMethod : BaseCatalogEntity
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool NeedAddress { get; set; }
     }
 }

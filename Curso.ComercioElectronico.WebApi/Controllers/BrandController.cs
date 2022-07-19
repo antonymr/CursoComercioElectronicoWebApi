@@ -1,4 +1,5 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Curso.ComercioElectronico.WebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BrandController : ControllerBase, IBrandAppService
@@ -33,9 +34,9 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         }
 
         [HttpPut]
-        public async Task UpdateAsync(CreateBrandDto entity)
+        public async Task UpdateAsync(string code, CreateBrandDto brandDto)
         {
-            await brandAppService.UpdateAsync(entity);
+            await brandAppService.UpdateAsync(code, brandDto);
         }
 
         [HttpPost]
@@ -45,9 +46,9 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         }
 
         [HttpDelete]
-        public Task<bool> DeleteAsync(Brand entity)
+        public async Task DeleteAsync(string code)
         {
-            return brandAppService.DeleteAsync(entity);
+             await brandAppService.DeleteAsync(code);
         }
     }
 }

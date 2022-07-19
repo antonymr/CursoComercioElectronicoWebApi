@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Curso.ComercioElectronico.Infraestructura.EntityConfigurations
 {
-    public class ProductTypeConfiguration : IEntityTypeConfiguration<ProductType>
+    internal class DeliveryMethodConfiguration : IEntityTypeConfiguration<DeliveryMethod>
     {
-        public void Configure(EntityTypeBuilder<ProductType> builder)
+        public void Configure(EntityTypeBuilder<DeliveryMethod> builder)
         {
-            builder.ToTable("ProductTypes");
+            builder.ToTable("DeliveryMethods");
             builder.HasKey(b => b.Code);
 
             builder.Property(b => b.Code)
@@ -18,9 +18,12 @@ namespace Curso.ComercioElectronico.Infraestructura.EntityConfigurations
             builder.Property(b => b.Name)
                 .HasMaxLength(256)
                 .IsRequired();
-            
+
             builder.Property(b => b.Description)
                 .HasMaxLength(256);
+
+            builder.Property(b => b.NeedAddress)
+                .HasDefaultValue(false);
         }
     }
 }

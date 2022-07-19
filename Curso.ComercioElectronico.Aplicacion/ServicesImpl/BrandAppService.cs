@@ -1,63 +1,61 @@
-﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+﻿using AutoMapper;
+using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
+using Curso.ComercioElectronico.Aplicacion.Exceptions;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 {
     public class BrandAppService : IBrandAppService
     {
         private readonly IGenericRepository<Brand> brandRepository;
+        private readonly IMapper mapper;
         private readonly IValidator<CreateBrandDto> validator;
 
-        public BrandAppService(IGenericRepository<Brand> repository, IValidator<CreateBrandDto> validator)
+        public BrandAppService(IGenericRepository<Brand> repository, IMapper mapper, IValidator<CreateBrandDto> validator)
         {
             brandRepository = repository;
+            this.mapper = mapper;
             this.validator = validator;
         }
 
         public async Task<ICollection<BrandDto>> GetAllAsync()
         {
             var query = await brandRepository.GetAsync();
-            var result = query.Select(x => new BrandDto
-            {
-                Code = x.Code,
-                Description = x.Description,
-                CreationDate = x.CreationDate
-            });
+            var result = query.Where(x => x.IsDeleted == false).Select(x => mapper.Map<BrandDto>(x));
             return result.ToList();
         }
 
         public async Task<BrandDto> GetByIdAsync(string code)
         {
-            var query = brandRepository.GetQueryable();
-            query = query.Where(x => x.Code == code);
-            var resultQuery = query.Select(x => new BrandDto
-            {
-                Code = x.Code,
-                Description = x.Description,
-                CreationDate = x.CreationDate
-            });
-            return await resultQuery.SingleOrDefaultAsync();
+            var brand = await brandRepository.GetByIdAsync(code);
+            if (brand == null || brand.IsDeleted == true)
+                throw new NotFoundException($"Marca con codigo {code} no encontrado.");
+            var brandDto = mapper.Map<BrandDto>(brand);
+            return brandDto;
         }
 
-        public async Task<bool> DeleteAsync(Brand entity)
+        public async Task DeleteAsync(string code)
         {
-            await brandRepository.DeleteAsync(entity);
-            return true;
+            var brand = await brandRepository.GetByIdAsync(code);
+            if (brand == null || brand.IsDeleted == true)
+                throw new NotFoundException($"Marca con codigo {code} no encontrado.");
+            brand.IsDeleted = true;
+            brand.ModifiedDate = DateTime.Now;
+            await brandRepository.UpdateAsync(brand);
         }
 
-        public async Task UpdateAsync(CreateBrandDto brandDto)
+        public async Task UpdateAsync(string code, CreateBrandDto brandDto)
         {
-            Brand brand = new Brand();
+            await validator.ValidateAndThrowAsync(brandDto);
+            var brand = await brandRepository.GetByIdAsync(code);
+            if (brand == null || brand.IsDeleted == true)
+                throw new NotFoundException($"Marca con codigo {code} no encontrado.");
             brand.Code = brandDto.Code;
+            brand.Name = brandDto.Name;
             brand.Description = brandDto.Description;
             brand.ModifiedDate = DateTime.Now;
             await brandRepository.UpdateAsync(brand);
@@ -65,9 +63,11 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 
         public async Task CreateAsync(CreateBrandDto brandDto)
         {
-            Brand brand = new Brand();
-            brand.Code = brandDto.Code;
-            brand.Description = brandDto.Description;
+            await validator.ValidateAndThrowAsync(brandDto);
+            var exists = await brandRepository.GetByIdAsync(brandDto.Code);
+            if (exists != null)
+                throw new BusinessException($"Marca con codigo {brandDto.Code} ya existe.");
+            var brand = mapper.Map<Brand>(brandDto);
             brand.CreationDate = DateTime.Now;
             await brandRepository.CreateAsync(brand);
         }

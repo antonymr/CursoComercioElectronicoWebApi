@@ -1,14 +1,8 @@
-﻿using Curso.ComercioElectronico.Dominio;
-using Curso.ComercioElectronico.Dominio.Repositories;
+﻿using Curso.ComercioElectronico.Dominio.Repositories;
 using Curso.ComercioElectronico.Infraestructura.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Infraestructura
 {
@@ -16,13 +10,10 @@ namespace Curso.ComercioElectronico.Infraestructura
     {
         public static IServiceCollection AddInfraestructure(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<ComercioElectronicoDbContext>(options =>
+            services.AddDbContext<EcommerceDbContext>(options =>
             {
-                options.UseSqlServer(config.GetConnectionString("ComercioElectronico"));
+                options.UseSqlServer(config.GetConnectionString("Ecommerce"));
             });
-            services.AddTransient<IProductRepository, ProductRepository>();
-            services.AddTransient<IProductTypeRepository, ProductTypeRepository>();
-            services.AddTransient<IBrandRepository, BrandRepository>();
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             return services;
         }

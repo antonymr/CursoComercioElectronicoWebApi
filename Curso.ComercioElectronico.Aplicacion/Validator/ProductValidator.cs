@@ -1,4 +1,4 @@
-﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+﻿using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,6 @@ namespace Curso.ComercioElectronico.Aplicacion.Validator
             RuleFor(a => a.Name).MaximumLength(100);
 
             //Description
-            RuleFor(a => a.Description).Empty();
             RuleFor(a => a.Description).MaximumLength(256);
 
             //Price
