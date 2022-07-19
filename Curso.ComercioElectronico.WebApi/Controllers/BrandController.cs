@@ -1,9 +1,6 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
 using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using Curso.ComercioElectronico.Aplicacion.Services;
-using Curso.ComercioElectronico.Dominio.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Curso.ComercioElectronico.WebApi.Controllers
@@ -19,7 +16,6 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         {
             this.brandAppService = brandAppService;
         }
-
 
         [HttpGet]
         public Task<ICollection<BrandDto>> GetAllAsync()

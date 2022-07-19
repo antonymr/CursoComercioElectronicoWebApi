@@ -1,7 +1,6 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
 using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using Curso.ComercioElectronico.Aplicacion.Services;
-using Curso.ComercioElectronico.Dominio.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

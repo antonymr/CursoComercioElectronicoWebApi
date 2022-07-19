@@ -11,11 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//builder.Services.AddControllers();
-// Add services to the container.
 builder.Services.AddControllers(options =>
 {
-    //Aplicar filter globalmente a todos los controller
     options.Filters.Add<ApiExceptionFilterAttribute>();
 });
 
@@ -23,12 +20,10 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Agregar las inyecciones de dependencia de cada una de las capas
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfraestructure(builder.Configuration);
 builder.Services.AddDomain(builder.Configuration);
 
-//Configurar esquema de autentificacion jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.SaveToken = true;
@@ -42,24 +37,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-//Configurar politica
-builder.Services.AddAuthorization(options =>
-{
-    //de verificacion de claims
-    //options.AddPolicy("PoliticaClaim", policy => policy.RequireClaim("CodigoAcceso"));
-    options.AddPolicy("Ecuatoriano", policy => policy.RequireClaim("Ecuatoriano", true.ToString()));
-    options.AddPolicy("TieneLicencia", policy => policy.RequireClaim("TieneLicencia", true.ToString()));
-    options.AddPolicy("EcuatorianoLicencia", policy => policy.RequireClaim("TieneLicencia", true.ToString())
-                                                            .RequireClaim("Ecuatoriano", true.ToString()));
-
-    //Configurable
-    //Archivo de configuracion Politicas => roles asociados
-    options.AddPolicy("Gestion", policy => policy.RequireRole("Admin", "Soporte"));
-});
+builder.Services.AddAuthorization();
 
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JWT"));
 
-//builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddCors();
 
 
@@ -74,15 +55,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Politica global CORS Middleware  
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true) // Permitir cualquier origen
+    .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
 
-//2. registra el middleware que usa los esquemas de autenticación registrados
-//debe estar antes de cualquier componente componente que requiere autenticacion
 app.UseAuthentication();
 app.UseAuthorization();
 
