@@ -1,10 +1,12 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using Curso.ComercioElectronico.Aplicacion.Services;
-using Curso.ComercioElectronico.Dominio.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Curso.ComercioElectronico.WebApi.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductTypeController : ControllerBase, IProductTypeAppService
@@ -29,9 +31,9 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         }
 
         [HttpPut]
-        public Task<ProductTypeDto> UpdateAsync(ProductType entity)
+        public async Task UpdateAsync(string code, CreateProductTypeDto productTypeDto)
         {
-            return productTypeAppService.UpdateAsync(entity);
+            await productTypeAppService.UpdateAsync(code, productTypeDto);
         }
 
         [HttpPost]
@@ -41,9 +43,9 @@ namespace Curso.ComercioElectronico.WebApi.Controllers
         }
 
         [HttpDelete]
-        public Task<bool> DeleteAsync(ProductType entity)
+        public async Task DeleteAsync(string code)
         {
-            return productTypeAppService.DeleteAsync(entity);
+            await productTypeAppService.DeleteAsync(code);
         }
     }
 }

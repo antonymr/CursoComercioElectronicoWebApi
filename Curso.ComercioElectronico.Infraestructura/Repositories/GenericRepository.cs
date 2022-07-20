@@ -1,19 +1,14 @@
 ﻿using Curso.ComercioElectronico.Dominio.Entities.Base;
 using Curso.ComercioElectronico.Dominio.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Infraestructura.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
-        private readonly ComercioElectronicoDbContext context;
+        private readonly EcommerceDbContext context;
 
-        public GenericRepository(ComercioElectronicoDbContext context)
+        public GenericRepository(EcommerceDbContext context)
         {
             this.context = context;
         }
@@ -38,7 +33,12 @@ namespace Curso.ComercioElectronico.Infraestructura.Repositories
         {
             await context.Set<T>().AddAsync(entity);
             await context.SaveChangesAsync();
+        }
 
+        public async Task CreateRangeAsync(List<T> entities)
+        {
+            await context.Set<T>().AddRangeAsync(entities);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)
@@ -56,15 +56,6 @@ namespace Curso.ComercioElectronico.Infraestructura.Repositories
         public IQueryable<T> GetQueryable()
         {
             return context.Set<T>().AsQueryable();
-        }
-
-        public IQueryable<T> GetListOffSetAsync(int limit = 10, int offset = 0)
-        {
-            var query = GetQueryable();
-            query = query
-                .Skip(offset)
-                .Take(limit);
-            return query;
         }
     }
 }

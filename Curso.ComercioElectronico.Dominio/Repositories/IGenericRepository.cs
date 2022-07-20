@@ -37,6 +37,13 @@ namespace Curso.ComercioElectronico.Dominio.Repositories
         Task CreateAsync(T entity);
 
         /// <summary>
+        /// Crear varios objetos en la base de datos
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        Task CreateRangeAsync(List<T> entities);
+
+        /// <summary>
         /// Actualizar un objeto de la base de datos.
         /// </summary>
         /// <param name="entity"></param>
@@ -55,13 +62,5 @@ namespace Curso.ComercioElectronico.Dominio.Repositories
         /// </summary>
         /// <returns></returns>
         IQueryable<T> GetQueryable();
-
-        /// <summary>
-        /// Retorna una consulta paginada.
-        /// </summary>
-        /// <param name="limit"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
-        IQueryable<T> GetListOffSetAsync(int limit = 10, int offset = 0);
     }
 }

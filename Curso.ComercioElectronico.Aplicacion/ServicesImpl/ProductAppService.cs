@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
+using Curso.ComercioElectronico.Aplicacion.Exceptions;
 using Curso.ComercioElectronico.Aplicacion.Services;
 using Curso.ComercioElectronico.Dominio.Entities;
 using Curso.ComercioElectronico.Dominio.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
 {
@@ -16,11 +14,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
     {
         private readonly IGenericRepository<Product> productRepository;
         private readonly IMapper mapper;
+        private readonly IValidator<CreateProductDto> validator; 
 
-        public ProductAppService(IGenericRepository<Product> repository, IMapper mapper)
+        public ProductAppService(IGenericRepository<Product> repository, IMapper mapper, IValidator<CreateProductDto> productDtoValidator)
         {
             productRepository = repository;
             this.mapper = mapper;
+            this.validator = productDtoValidator;
         }
 
         public async Task<ResultPagination<ProductDto>> GetAllAsync(string? search = "", int offset = 0, int limit = 10, string sort = "Name", string order = "asc")
@@ -35,7 +35,9 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             {
                 //filtro
                 query = query.Where(
-                    x => x.Name.ToUpper().Contains(search.ToUpper())
+                    x => x.Name.ToUpper().Contains(search.ToUpper()) || 
+                    x.Brand.Name.ToUpper().Contains(search.ToUpper()) || 
+                    x.ProductType.Name.ToUpper().Contains(search.ToUpper())
                 );
 
             }
@@ -67,7 +69,7 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             var queryDto = query.Select(p => new ProductDto { 
                 Id = p.Id, 
                 Name = p.Name, 
-                Descrription = p.Description, 
+                Description = p.Description, 
                 Price = p.Price, 
                 Brand = p.Brand.Description, 
                 ProductType = p.ProductType.Description 
@@ -84,11 +86,13 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         public async Task<ProductDto> GetByIdAsync(Guid id)
         {
             var query = productRepository.GetQueryable();
-            query = query.Where(p => p.Id == id);
+            query = query.Where(p => p.Id == id && p.IsDeleted == false);
+            if(query.Count() == 0)
+                throw new NotFoundException($"Producto con id {id} no encontrado");
             var resultQuery = query.Select(p => new ProductDto { 
                 Id = p.Id, 
                 Name = p.Name, 
-                Descrription = p.Description, 
+                Description = p.Description, 
                 Price = p.Price, 
                 Brand = p.Brand.Description, 
                 ProductType = p.ProductType.Description 
@@ -99,26 +103,32 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         public async Task DeleteAsync(Guid id)
         {
             var product = await productRepository.GetByIdAsync(id);
+            if (product == null || product.IsDeleted == true)
+                throw new NotFoundException($"Producto con id {id} no encontrado.");
             product.IsDeleted = true;
             product.ModifiedDate = DateTime.Now;
-            await productRepository.DeleteAsync(product);
-        }
-
-        public async Task UpdateAsync(Guid id, CreateProductDto productTypeDto)
-        {
-            var product = await productRepository.GetByIdAsync(id);
-            product.Name = productTypeDto.Name;
-            product.Description = productTypeDto.Descrription;
-            product.Price = productTypeDto.Price;
-            product.ModifiedDate = DateTime.Now;
-            product.BrandId = productTypeDto.BrandId;
-            product.ProductTypeId = productTypeDto.ProductTypeId;
             await productRepository.UpdateAsync(product);
         }
 
-        public async Task CreateAsync(CreateProductDto entity)
+        public async Task UpdateAsync(Guid id, CreateProductDto productDto)
         {
-            var product = mapper.Map<Product>(entity);
+            await validator.ValidateAndThrowAsync(productDto);
+            var product = await productRepository.GetByIdAsync(id);
+            if (product == null || product.IsDeleted == true)
+                throw new NotFoundException($"Producto con id {id} no encontrado.");
+            product.Name = productDto.Name;
+            product.Description = productDto.Description;
+            product.Price = productDto.Price;
+            product.ModifiedDate = DateTime.Now;
+            product.BrandId = productDto.BrandId;
+            product.ProductTypeId = productDto.ProductTypeId;
+            await productRepository.UpdateAsync(product);
+        }
+
+        public async Task CreateAsync(CreateProductDto productDto)
+        {
+            await validator.ValidateAndThrowAsync(productDto);
+            var product = mapper.Map<Product>(productDto);
             product.Id = Guid.NewGuid();
             product.CreationDate = DateTime.Now;
             await productRepository.CreateAsync(product);

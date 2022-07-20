@@ -16,27 +16,18 @@ public class TokenController : ControllerBase
     {
         this.jwtConfiguration = options.Value;
     }
+
     [HttpPost]
     public async Task<string> TokenAsync(UserInput input)
     {
-        //1. Validar User.
-        var userTest = "foo";
-        if (input.UserName != userTest || input.Password != "123")
+        if (input.Password != "123")
         {
             throw new AuthenticationException("User or Passowrd incorrect!");
         }
-        //2. Generar claims
-        //create claims details based on the user information
-        var claims = new[] {
-                        new Claim(JwtRegisteredClaimNames.Sub, userTest),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("UserName", userTest),
-                        new Claim("Name", "Antony"),
-                        new Claim("UserId", "011"),
-                        //new Claim("Email", user.Email)
-                        //Other...
-                    };
+        var claims = new List<Claim>();
+        claims.Add(new Claim(JwtRegisteredClaimNames.Sub, input.UserName));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+        claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()));
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.Key));
         var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var tokenDescriptor = new JwtSecurityToken(

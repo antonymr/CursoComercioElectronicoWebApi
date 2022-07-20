@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Curso.ComercioElectronico.Dominio.Entities.Base;
 
 namespace Curso.ComercioElectronico.Dominio.Entities
 {
-    public class DeliveryMethod
+    public class DeliveryMethod : BaseCatalogEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        
-        public decimal Price { get; set; }
+        public bool NeedAddress { get; set; }
     }
 }

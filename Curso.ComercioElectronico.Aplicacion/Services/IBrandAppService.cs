@@ -1,10 +1,5 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
-using Curso.ComercioElectronico.Dominio.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 
 namespace Curso.ComercioElectronico.Aplicacion.Services
 {
@@ -12,8 +7,8 @@ namespace Curso.ComercioElectronico.Aplicacion.Services
     {
         Task<ICollection<BrandDto>> GetAllAsync();
         Task<BrandDto> GetByIdAsync(string code);
-        Task<bool> DeleteAsync(Brand entity);
+        Task DeleteAsync(string code);
         Task CreateAsync(CreateBrandDto brandDto);
-        Task UpdateAsync(CreateBrandDto brandDto);
+        Task UpdateAsync(string code, CreateBrandDto brandDto);
     }
 }

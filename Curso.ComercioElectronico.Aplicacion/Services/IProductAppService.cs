@@ -1,4 +1,5 @@
 ﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 using Curso.ComercioElectronico.Dominio.Entities;
 using System;
 using System.Collections.Generic;

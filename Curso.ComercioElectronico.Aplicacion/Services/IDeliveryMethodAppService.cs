@@ -1,14 +1,14 @@
-﻿using Curso.ComercioElectronico.Dominio.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Curso.ComercioElectronico.Aplicacion.Dtos;
+using Curso.ComercioElectronico.Aplicacion.Dtos.Create;
 
 namespace Curso.ComercioElectronico.Aplicacion.Services
 {
     public interface IDeliveryMethodAppService
     {
-        Task<ICollection<DeliveryMethod>> GetAsync();
+        Task<ICollection<DeliveryMethodDto>> GetAllAsync();
+        Task<DeliveryMethodDto> GetByIdAsync(string code);
+        Task DeleteAsync(string code);
+        Task CreateAsync(CreateDeliveryMethodDto deliveryMethodDto);
+        Task UpdateAsync(string code, CreateDeliveryMethodDto deliveryMethodDto);
     }
 }
