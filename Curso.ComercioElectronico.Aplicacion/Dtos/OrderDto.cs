@@ -11,7 +11,7 @@ namespace Curso.ComercioElectronico.Aplicacion.Dtos
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
 
-        public string DeliveryMethodId { get; set; }
+        public string DeliveryMethod { get; set; }
         public List<OrderLineDto> OrderLines { get; set; }
     }
 }

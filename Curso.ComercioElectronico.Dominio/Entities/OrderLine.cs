@@ -7,7 +7,9 @@ namespace Curso.ComercioElectronico.Dominio.Entities
         public int Quantity { get; set; }
         public decimal Subtotal { get; set; }
         public decimal Taxes { get; set; }
+        public decimal TaxRate { get; set; }
         public decimal Discount { get; set; }
+        public decimal DiscountRate { get; set; }
         public decimal Total { get; set; }
 
         public Guid ProductId { get; set; }

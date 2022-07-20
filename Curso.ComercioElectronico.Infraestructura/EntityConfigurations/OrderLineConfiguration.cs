@@ -25,7 +25,15 @@ namespace Curso.ComercioElectronico.Infraestructura.EntityConfigurations
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
+            builder.Property(b => b.TaxRate)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
             builder.Property(b => b.Discount)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(b => b.DiscountRate)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 

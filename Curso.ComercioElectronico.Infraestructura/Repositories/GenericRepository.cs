@@ -33,7 +33,12 @@ namespace Curso.ComercioElectronico.Infraestructura.Repositories
         {
             await context.Set<T>().AddAsync(entity);
             await context.SaveChangesAsync();
+        }
 
+        public async Task CreateRangeAsync(List<T> entities)
+        {
+            await context.Set<T>().AddRangeAsync(entities);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)

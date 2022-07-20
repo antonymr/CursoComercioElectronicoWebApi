@@ -7,6 +7,6 @@ namespace Curso.ComercioElectronico.Aplicacion.Dtos.Create
         public string ClientAddress { get; set; }
 
         public string DeliveryMethodId { get; set; }
-        public List<CreateOrderLinetDto> OrderLines { get; set; }
+        public List<CreateOrderLineDto> OrderLines { get; set; }
     }
 }

@@ -37,6 +37,13 @@ namespace Curso.ComercioElectronico.Dominio.Repositories
         Task CreateAsync(T entity);
 
         /// <summary>
+        /// Crear varios objetos en la base de datos
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        Task CreateRangeAsync(List<T> entities);
+
+        /// <summary>
         /// Actualizar un objeto de la base de datos.
         /// </summary>
         /// <param name="entity"></param>

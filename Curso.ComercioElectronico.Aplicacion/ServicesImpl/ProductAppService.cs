@@ -35,7 +35,9 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
             {
                 //filtro
                 query = query.Where(
-                    x => x.Name.ToUpper().Contains(search.ToUpper())
+                    x => x.Name.ToUpper().Contains(search.ToUpper()) || 
+                    x.Brand.Name.ToUpper().Contains(search.ToUpper()) || 
+                    x.ProductType.Name.ToUpper().Contains(search.ToUpper())
                 );
 
             }
@@ -84,7 +86,7 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         public async Task<ProductDto> GetByIdAsync(Guid id)
         {
             var query = productRepository.GetQueryable();
-            query = query.Where(p => p.Id == id);
+            query = query.Where(p => p.Id == id && p.IsDeleted == false);
             if(query.Count() == 0)
                 throw new NotFoundException($"Producto con id {id} no encontrado");
             var resultQuery = query.Select(p => new ProductDto { 
@@ -101,19 +103,18 @@ namespace Curso.ComercioElectronico.Aplicacion.ServicesImpl
         public async Task DeleteAsync(Guid id)
         {
             var product = await productRepository.GetByIdAsync(id);
-            if (product == null)
+            if (product == null || product.IsDeleted == true)
                 throw new NotFoundException($"Producto con id {id} no encontrado.");
             product.IsDeleted = true;
             product.ModifiedDate = DateTime.Now;
             await productRepository.UpdateAsync(product);
-            //await productRepository.DeleteAsync(product);
         }
 
         public async Task UpdateAsync(Guid id, CreateProductDto productDto)
         {
             await validator.ValidateAndThrowAsync(productDto);
             var product = await productRepository.GetByIdAsync(id);
-            if (product == null)
+            if (product == null || product.IsDeleted == true)
                 throw new NotFoundException($"Producto con id {id} no encontrado.");
             product.Name = productDto.Name;
             product.Description = productDto.Description;

@@ -22,6 +22,7 @@ namespace Curso.ComercioElectronico.Aplicacion
             services.AddTransient<IProductTypeAppService, ProductTypeAppService>();
             services.AddTransient<IBrandAppService, BrandAppService>();
             services.AddTransient<IDeliveryMethodAppService, DeliveryMethodAppService>();
+            services.AddTransient<IOrderAppService, OrderAppService>();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
